@@ -5,16 +5,21 @@ function drawBuffer( width, height, context, buffer ) {
     var step = Math.ceil( data.length / width );
     var amp = height / 2;
     for(var i=0; i < width; i++){
-        var min = 1.0;
-        var max = -1.0;
+        var avgPositive = 0;
+        var avgNegative = 0;
+        var numPositive = 0;
+        var numNegative = 0;
         for (j=0; j<step; j++) {
             var datum = data[(i*step)+j]; 
-            if (datum < min)
-                min = datum;
-            if (datum > max)
-                max = datum;
+            if(datum < 0) {
+                numNegative++;
+                avgNegative += (datum - avgNegative) / numNegative;
+            } else {
+                numPositive++;
+                avgPositive += (datum - avgPositive) / numPositive;
+            }
         }
-        context.fillRect(i,(1+min)*amp,1,Math.max(1,(max-min)*amp));
+        context.fillRect(i,(1+avgNegative)*amp,1,Math.max(1,(avgPositive-avgNegative)*amp));
     }
 }
 
